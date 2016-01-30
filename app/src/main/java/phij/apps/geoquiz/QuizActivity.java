@@ -18,7 +18,6 @@ public class QuizActivity extends AppCompatActivity {
     private Button mFalseButton;
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
-    private  Button mCheatButton;
     // Declaración del texto de la pregunta
     private TextView mQuestionTextView;
     // Array de preguntas
@@ -35,12 +34,6 @@ public class QuizActivity extends AppCompatActivity {
     private static final String TAG = "QuizActivity";
     // Key para Bundle (índice de la pregunta)
     private static final String KEY_INDEX = "index";
-    // Key para Bundle (Usuario hizo trampas)
-    private static final String KEY_CHEATER = "cheater";
-    // Request code para la Activity hija
-    private static final int REQUEST_CODE_CHEAT = 0;
-    // Respuesta de Activity hija, si el usuario ha hecho trampas
-    private boolean mIsCheater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +77,6 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-                mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -102,21 +94,9 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        // Botón "Cheat"
-        mCheatButton = (Button) findViewById(R.id.cheat_button);
-        mCheatButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-                Intent i = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
-                startActivityForResult(i, REQUEST_CODE_CHEAT);
-            }
-        });
-
         // Recupera el índice de la pregunta guardado (si existe)
         if(savedInstanceState != null){
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
-            mIsCheater = savedInstanceState.getBoolean(KEY_CHEATER);
         }
 
         updateQuestion();
@@ -128,7 +108,6 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
-        savedInstanceState.putBoolean(KEY_CHEATER, mIsCheater);
     }
 
     @Override
@@ -176,37 +155,21 @@ public class QuizActivity extends AppCompatActivity {
 
         int messageResId = 0;
 
-        if(mIsCheater){
-            messageResId = R.string.judgment_toast;
-        } else {
             if (userPressedTrue == answerIsTrue) {
                 messageResId = R.string.correct_toast;
             } else {
                 messageResId = R.string.incorrect_toast;
             }
-        }
+
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Comprueba si el usuario hizo trampas y miró la respuesta al volver a
-     * esta Activity
-     * @param requestCode Código de petición
-     * @param resultCode Código de respuesta
-     * @param data Intent
-     */
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(resultCode != Activity.RESULT_OK){
             return;
-        }
-
-        if(requestCode == REQUEST_CODE_CHEAT){
-            if(data == null){
-                return;
-            }
-            mIsCheater = CheatActivity.wasAnswerShown(data);
         }
     }
 }
