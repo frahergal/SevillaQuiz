@@ -5,11 +5,11 @@ package phij.apps.geoquiz;
  */
 public class Question {
 
-    private int mTextResId;
+    private String mText;
     private boolean mAnswerTrue;
 
-    public Question(int textResId, boolean answerTrue){
-        mTextResId = textResId;
+    public Question(String text, boolean answerTrue){
+        mText = text;
         mAnswerTrue = answerTrue;
     }
 
@@ -21,11 +21,11 @@ public class Question {
         mAnswerTrue = answerTrue;
     }
 
-    public int getTextResId() {
-        return mTextResId;
+    public String getText() {
+        return mText;
     }
 
-    public void setTextResId(int textResId) {
-        mTextResId = textResId;
+    public void setText(String text) {
+        mText = text;
     }
 }

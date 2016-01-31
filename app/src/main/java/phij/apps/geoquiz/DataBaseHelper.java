@@ -1,6 +1,7 @@
 package phij.apps.geoquiz;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -10,16 +11,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Created by Javier on 31/01/2016.
- */
-public class DataBaseHelper extends SQLiteOpenHelper{
+public class DataBaseHelper extends SQLiteOpenHelper {
 
     //The Android's default system path of your application database.
-    private static String DB_PATH = "/data/data/phij.apps.geoquiz/databases/";
+    String DB_PATH =null;
 
-    private static String DB_NAME = "sevillaQuizDB";
+    private static String DB_NAME = "sevillaQuizDB.db";
 
     private SQLiteDatabase myDataBase;
 
@@ -34,6 +34,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
         super(context, DB_NAME, null, 1);
         this.myContext = context;
+        DB_PATH="/data/data/"+context.getPackageName()+"/"+"databases/";
     }
 
     /**
@@ -57,7 +58,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
             } catch (IOException e) {
 
-                throw new Error("Error copying database");
+                throw new RuntimeException(e);
 
             }
         }
@@ -149,8 +150,23 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     }
 
-    // Add your public helper methods to access and get content from the database.
-    // You could return cursors by doing "return myDataBase.query(....)" so it'd be easy
-    // to you to create adapters for your views.
-
+    /**
+     * Obtains a list of questions depending on the localization.
+     * @param location
+     * @return
+     */
+    public List<Question> getQestions(String location) {
+        List<Question> questions = new ArrayList<>();
+        String sql = "select question_" + location + ", answer from Questions";
+        Cursor cursor = myDataBase.rawQuery(sql, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            int answer = cursor.getInt(1);
+            Question q = new Question(cursor.getString(0), (answer == 1 ? true : false));
+            questions.add(q);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return questions;
+    }
 }

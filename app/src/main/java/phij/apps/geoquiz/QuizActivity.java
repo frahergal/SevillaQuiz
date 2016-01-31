@@ -2,6 +2,7 @@ package phij.apps.geoquiz;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.SQLException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,29 +12,26 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.util.List;
+
 public class QuizActivity extends AppCompatActivity {
 
-    // Declaraciones de los botones
+    // Buttons
     private Button mTrueButton;
     private Button mFalseButton;
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
-    // Declaración del texto de la pregunta
+    // Question Text
     private TextView mQuestionTextView;
-    // Array de preguntas
-    private Question[] mQuestionBank = new Question[]{
-            new Question(R.string.questions_oceans, true),
-            new Question(R.string.questions_mideast, false),
-            new Question(R.string.questions_africa, false),
-            new Question(R.string.questions_americas, true),
-            new Question(R.string.questions_asia, true),
-    };
-    // Índice
+    // Index
     private int mCurrentIndex = 0;
     // TAG
     private static final String TAG = "QuizActivity";
-    // Key para Bundle (índice de la pregunta)
+    // Bundle key (index of question)
     private static final String KEY_INDEX = "index";
+    // List of Questions
+    private List<Question> questions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,22 +40,38 @@ public class QuizActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate(Bundle) called" );
         setContentView(R.layout.activity_quiz);
 
-        // Obtener el texto de la pregunta
+        // Obtains questions from DB
+        DataBaseHelper myDbHelper = new DataBaseHelper(this);
+        try {
+            myDbHelper.createDataBase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            myDbHelper.openDataBase();
+        }catch(SQLException sqle){
+            throw sqle;
+        }
+        // TODO: Establecer localización
+        questions = myDbHelper.getQestions("en");
+
+
+        // Obtain the element
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
-        // Listener al texto para pasar de pregunta
+        // Listener to pass to the next question
         mQuestionTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                mCurrentIndex = (mCurrentIndex + 1) % questions.size();
                 updateQuestion();
             }
         });
 
-        // Obtener los botones
+        // Obtain the buttons elements
         mTrueButton = (Button) findViewById(R.id.true_button);
         mFalseButton = (Button) findViewById(R.id.false_button);
 
-        // Listeners de los botones
+        // Buttons' listeners
         mTrueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,30 +85,30 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        // Botón "Siguiente Pregunta"
+        // Button "Next Question"
         mNextButton = (ImageButton) findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                mCurrentIndex = (mCurrentIndex + 1) % questions.size();
                 updateQuestion();
             }
         });
 
-        // Botón "Pregunta anterior"
+        // Button "Previous Question"
         mPrevButton = (ImageButton) findViewById(R.id.prev_button);
         mPrevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
+                mCurrentIndex = (mCurrentIndex - 1) % questions.size();
                 if(mCurrentIndex<0){
-                    mCurrentIndex = mQuestionBank.length-1;
+                    mCurrentIndex = questions.size()-1;
                 }
                 updateQuestion();
             }
         });
 
-        // Recupera el índice de la pregunta guardado (si existe)
+        // Recovers the saved question index
         if(savedInstanceState != null){
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
         }
@@ -102,7 +116,7 @@ public class QuizActivity extends AppCompatActivity {
         updateQuestion();
     }
 
-    // Guardar estado de la aplicación (índice de la pregunta)
+    // Saves the state of the application
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
         super.onSaveInstanceState(savedInstanceState);
@@ -140,18 +154,18 @@ public class QuizActivity extends AppCompatActivity {
         Log.d(TAG, "onDestroy() called");
     }
 
-    // Actualiza a la siguiente pregunta
+    // Updates to the next question
     private void updateQuestion(){
-        int question = mQuestionBank[mCurrentIndex].getTextResId();
-        mQuestionTextView.setText(question);
+        String textQuestion = questions.get(mCurrentIndex).getText();
+        mQuestionTextView.setText(textQuestion);
     }
 
     /**
-     * Comprueba la respuesta del usuario
-     * @param userPressedTrue El usuario presionó el botón de "Verdad"
+     * Checks the user's answer
+     * @param userPressedTrue The user pressed "True" button
      */
     private void checkAnswer(boolean userPressedTrue){
-        boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+        boolean answerIsTrue = questions.get(mCurrentIndex).isAnswerTrue();
 
         int messageResId = 0;
 
