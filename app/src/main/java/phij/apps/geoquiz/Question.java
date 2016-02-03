@@ -5,9 +5,14 @@ package phij.apps.geoquiz;
  */
 public class Question {
 
+    // Text of the question
     private String mText;
+    // Answer of the question
     private boolean mAnswerTrue;
+    // Category of the question
+    private int mCategory;
 
+    // Getters and Setters
     public Question(String text, boolean answerTrue){
         mText = text;
         mAnswerTrue = answerTrue;
@@ -27,5 +32,13 @@ public class Question {
 
     public void setText(String text) {
         mText = text;
+    }
+
+    public int getCategory() {
+        return mCategory;
+    }
+
+    public void setCategory(int mCategory) {
+        this.mCategory = mCategory;
     }
 }

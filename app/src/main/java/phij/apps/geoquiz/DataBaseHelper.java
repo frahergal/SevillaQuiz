@@ -16,14 +16,11 @@ import java.util.List;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
+    private static String DB_NAME = "sevillaQuizDB.db";
+    private final Context myContext;
     //The Android's default system path of your application database.
     String DB_PATH =null;
-
-    private static String DB_NAME = "sevillaQuizDB.db";
-
     private SQLiteDatabase myDataBase;
-
-    private final Context myContext;
 
     /**
      * Constructor
@@ -151,13 +148,39 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Obtains a list of questions depending on the localization.
-     * @param location
+     * Obtains a list of questions depending on the language.
+     * @param location Code location for language (en, es, ru...)
      * @return
      */
-    public List<Question> getQestions(String location) {
+    public List<Question> getAllQestions(String location) {
         List<Question> questions = new ArrayList<>();
         String sql = "select question_" + location + ", answer from Questions";
+        Cursor cursor = myDataBase.rawQuery(sql, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            int answer = cursor.getInt(1);
+            Question q = new Question(cursor.getString(0), (answer == 1 ? true : false));
+            questions.add(q);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return questions;
+    }
+
+    /**
+     * Obtains a list of questions depending on the language and category selected.
+     *
+     * @param location Language
+     * @param category Category of the question
+     * @return
+     */
+    public List<Question> getQuestionByCategory(String location, int category) {
+        List<Question> questions = new ArrayList<>();
+        String sql = "select question_" + location + ", answer from Questions";
+        if (category != 0) {
+            sql += " where category=";
+            sql += String.valueOf(category);
+        }
         Cursor cursor = myDataBase.rawQuery(sql, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

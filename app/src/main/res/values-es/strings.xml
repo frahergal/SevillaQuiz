@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Trivial de Sevilla</string>
+    <string name="correct_toast">¡Correcto!</string>
+    <string name="false_button">Falso</string>
+    <string name="incorrect_toast">¡Incorrecto!</string>
+    <string name="location">es</string>
+    <string name="next_button">Siguiente</string>
+    <string name="prev_button">Anterior</string>
+    <string name="true_button">Verdadero</string>
+</resources>

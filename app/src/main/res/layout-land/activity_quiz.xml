@@ -22,15 +22,15 @@
             android:id="@+id/true_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/true_button"
-            android:background="@color/green"/>
+            android:background="@color/green"
+            android:text="@string/true_button" />
 
         <Button
             android:id="@+id/false_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/false_button"
-            android:background="@color/red"/>
+            android:background="@color/red"
+            android:text="@string/false_button" />
 
     </LinearLayout>
 
@@ -39,29 +39,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
-            android:padding="25dp"
             android:layout_margin="20dp"
-            android:src="@drawable/arrow_left"
-            android:contentDescription="@string/prev_button"/>
-
-    <Button
-        android:id="@+id/cheat_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="20dp"
-        android:text="@string/cheat_button"/>
-
+            android:contentDescription="@string/prev_button"
+            android:padding="25dp"
+            android:src="@drawable/arrow_left" />
 
         <ImageButton
             android:id="@+id/next_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
-            android:padding="25dp"
             android:layout_margin="20dp"
-            android:src="@drawable/arrow_right"
-            android:contentDescription="@string/next_button"/>
+            android:contentDescription="@string/next_button"
+            android:padding="25dp"
+            android:src="@drawable/arrow_right" />
 
 
 

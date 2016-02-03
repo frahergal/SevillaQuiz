@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sevilla Quiz</string>
-    <string name="true_button">True</string>
+    <string name="correct_toast">Correct!</string>
     <string name="false_button">False</string>
+    <string name="incorrect_toast">Incorrect!</string>
     <string name="next_button">Next</string>
     <string name="prev_button">Prev</string>
-    <string name="correct_toast">Correct!</string>
-    <string name="incorrect_toast">Incorrect!</string>
+    <string name="true_button">True</string>
     <string name="location">en</string>
 </resources>
